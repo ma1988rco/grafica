@@ -1,99 +1,136 @@
-<! DOCTYPE html>
-< meta  charset = " utf-8 " >
-< estilo >
-cuerpo {
-  fuente : 10 px  sans-serif ;
+Using d3-tip to add tooltips to a d3 bar chart.
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 10px sans-serif;
 }
-.y.axisRight  text {
-    llenar : naranja ;
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
 }
-.y.axisLeft  text {
-    relleno : acero azul ;
+
+.bar {
+  fill: orange;
 }
-.  ruta del eje ,
-.axis  line {
-  llenar : ninguno ;
-  accidente cerebrovascular : # 000 ;
-  forma-representación : crispEdges ;
+
+.bar:hover {
+  fill: orangered ;
 }
-.bar1 {
-  relleno : acero azul ;
+
+.x.axis path {
+  display: none;
 }
-.bar2 {
-  llenar : red ;
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
 }
-.x.axis  path {
-  pantalla : ninguna ;
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
 }
-< / style >
-< cuerpo >
-< script  src = " http://d3js.org/d3.v3.min.js " > </ script >
-< script >
-var margin = {top :  80 , right :  80 , bottom :  80 , left :  80 },
-    ancho =  600  -  margen . la izquierda  -  el margen . derecho ,
-    altura =  400  -  margen . arriba  -  margen . abajo ;
-var x =  d3 . escala . ordinal ()
-    . rangeRoundBands ([ 0 , ancho], .1 );
-var y0 =  d3 . escala . lineal (). dominio ([ 300 , 1100 ]). rango ([altura, 0 ]),
-y1 =  d3 . escala . lineal (). dominio ([ 20 , 80 ]). rango ([altura, 0 ]);
-var xAxis =  d3 . svg . eje ()
-    . escala (x)
-    . orientar ( " abajo " );
-// crear left yAxis
-var yAxisLeft =  d3 . svg . eje (). escala (y0). garrapatas ( 4 ). orientar ( " izquierda " );
-// crea el eje derecho
-var yAxisRight =  d3 . svg . eje (). escala (y1). garrapatas ( 6 ). orientar ( " derecha " );
-var svg =  d3 . select ( " cuerpo " ). append ( " svg " )
-    . attr ( " ancho " , ancho +  margen . izquierda  +  margen . derecha )
-    . attr ( " altura " , altura +  margen . arriba  +  margen . abajo )
-  . añadir ( " g " )
-    . attr ( " clase " , " gráfico " )
-    . attr ( " transformar " , " traducir ( "  +  margen . izquierda  +  " "  +  margen . top  +  " ) " );
-d3 . tsv ( " data.tsv " , tipo, función ( error , datos ) {
-  x . dominio ( data . map ( function ( d ) { return  d . year ;}));
-  y0 . dominio ([ 0 , d3 . max (datos, función ( d ) { devolución  d . dinero ;})]);
-  
-  svg . añadir ( " g " )
-      . attr ( " clase " , " eje x " )
-      . attr ( " transformación " , " traducir (0, "  + altura +  " ) " )
-      . llamar (xAxis);
-  svg . añadir ( " g " )
-	  . attr ( " clase " , " eje y axis axis " )
-	  . attr ( " transformar " , " traducir (0,0) " )
-	  . llamar (yAxisLeft)
-	. añadir ( " texto " )
-	  . attr ( " y " , 6 )
-	  . attr ( " dy " , " -2em " )
-	  . estilo ( " texto-ancla " , " fin " )
-	  . estilo ( " texto-ancla " , " fin " )
-	  . texto ( " Dólares " );
-	
-  svg . añadir ( " g " )
-	  . attr ( " clase " , " eje y axisRight " )
-	  . attr ( " transformar " , " traducir ( "  + (ancho) +  " , 0) " )
-	  . llamar (yAxisRight)
-	. añadir ( " texto " )
-	  . attr ( " y " , 6 )
-	  . attr ( " dy " , " -2em " )
-	  . attr ( " dx " , " 2em " )
-	  . estilo ( " texto-ancla " , " fin " )
-	  . texto ( " # " );
-  bares =  svg . selectAll ( " .bar " ). datos (datos). enter ();
-  bares . añadir ( " rect " )
-      . attr ( " clase " , " bar1 " )
-      . attr ( " x " , la función ( d ) { retorno  x ( d . año );})
-      . attr ( " ancho " , x . rangeBand () / 2 )
-      . attr ( " y " , función ( d ) { return  y0 ( d . dinero );})
-	  . attr ( " altura " , función ( d , i , j ) { altura de retorno -  y0 ( d . dinero );});
-  bares . añadir ( " rect " )
-      . attr ( " clase " , " bar2 " )
-      . attr ( " x " , función ( d ) { retorno  x ( d . año ) +  x . rangeBand () / 2 ;})
-      . attr ( " ancho " , x . rangeBand () /  2 )
-      . attr ( " Y " , la función ( d ) { retorno  y1 ( d . número );})
-	  . attr ( " altura " , la función ( d , i , j ) { retorno altura -  y1 ( d . número );});
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script>
+
+var margin = {top: 40, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var formatPercent = d3.format(".0%");
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .tickFormat(formatPercent);
+
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return "<strong>Frequency:</strong> <span style='color:red'>" + d.frequency + "</span>";
+  })
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+svg.call(tip);
+
+d3.tsv("data.tsv", type, function(error, data) {
+  x.domain(data.map(function(d) { return d.letter; }));
+  y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Frequency");
+
+  svg.selectAll(".bar")
+      .data(data)
+    .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.letter); })
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) { return y(d.frequency); })
+      .attr("height", function(d) { return height - y(d.frequency); })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
+
 });
- tipo de función ( d ) {
-  d . dinero  =  + d . dinero ;
+
+function type(d) {
+  d.frequency = +d.frequency;
   return d;
 }
-< / script >
+
+</script>
